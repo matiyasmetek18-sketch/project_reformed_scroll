@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Loci{% endblock %}
+{% block body_class %}feed-page{% endblock %}
+{% block body %}
+{% if banner %}<p class="banner" role="status">{{ banner }}</p>{% endif %}
+{% if quotes %}
+<div class="stage" id="stage">
+  <div class="reel" id="reel" data-start="{{ start }}">
+    {% for q in quotes %}
+      {% with active=(loop.index0 == start), sheet=false %}
+      {% include "_card.html" %}
+      {% endwith %}
+    {% endfor %}
+  </div>
+  <p class="progress" id="progress">{{ start + 1 }} / {{ quotes|length }}</p>
+  <p class="hint">Swipe, wheel, or the arrow keys. Double-tap a line to amen it.</p>
+  <div class="mover">
+    <button type="button" class="round" id="prev" hidden aria-label="Previous line">↑</button>
+    <button type="button" class="lectio" id="lectio" hidden aria-pressed="false">Lectio</button>
+    <button type="button" class="round" id="next" hidden aria-label="Next line">↓</button>
+  </div>
+</div>
+{% else %}
+<section class="page empty">
+  <h1>The scroll is empty</h1>
+  <p>Add a line of your own. A built-in line appears here only after its source page has been opened and the wording checked.</p>
+  <p><a class="button" href="{{ url_for('add_form') }}">Add a quote</a></p>
+</section>
+{% endif %}
+{% endblock %}

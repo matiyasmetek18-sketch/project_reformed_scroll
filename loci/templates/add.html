@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Add a line · Loci{% endblock %}
+{% block body %}
+<section class="page narrow">
+  <header class="page-head">
+    <h1>Add a line</h1>
+    <p>This is your own text. It is labeled as added by the reader and is not listed with the checked sources. The id will be <code>u</code> plus the row number.</p>
+  </header>
+  {% if error %}<p class="banner" role="alert">{{ error }}</p>{% endif %}
+  <form method="post" action="{{ url_for('add_quote') }}" class="sheet-form">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <label for="text">The line</label>
+    <textarea id="text" name="text" rows="6" required></textarea>
+    <label for="author">Author</label>
+    <input id="author" name="author" required autocomplete="off">
+    <label for="question">Question, if it has one</label>
+    <input id="question" name="question" autocomplete="off">
+    <label for="work">Work</label>
+    <input id="work" name="work" autocomplete="off">
+    <label for="citation">Citation</label>
+    <input id="citation" name="citation" autocomplete="off">
+    <label for="year">Year</label>
+    <input id="year" name="year" inputmode="numeric" autocomplete="off">
+    <label for="latin">Latin, if you have it</label>
+    <textarea id="latin" name="latin" rows="3"></textarea>
+    <label for="topics">Topics, separated by commas</label>
+    <input id="topics" name="topics" autocomplete="off" placeholder="grace, prayer">
+    <button class="button" type="submit">Add to the scroll</button>
+  </form>
+</section>
+{% endblock %}

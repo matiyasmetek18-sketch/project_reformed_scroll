@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Explore · Loci{% endblock %}
+{% block body %}
+<section class="page">
+  <header class="page-head">
+    <h1>Explore</h1>
+    <p>Loci are topic labels that a checked page actually uses, or labels you type on a line of your own. The timeline keeps a year only when the source states one.</p>
+  </header>
+  {% if total == 0 %}
+  <section class="empty">
+    <h2>Nothing to explore yet</h2>
+    <p>The catalog has no lines. Add one of your own, and it will show up here under any topics and year you enter.</p>
+    <p><a class="button" href="{{ url_for('add_form') }}">Add a quote</a></p>
+  </section>
+  {% else %}
+  <div class="split">
+    <section>
+      <h2>Loci</h2>
+      {% if topics %}
+      <ul class="loci">
+        {% for topic, items in topics %}
+        <li>
+          <h3>{{ topic }}</h3>
+          <ul>
+            {% for q in items %}
+            <li><a href="{{ url_for('focus', quote_id=q.id) }}">{{ q.author }} — {{ q.text }}</a></li>
+            {% endfor %}
+          </ul>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="quiet">No topic labels are on the scroll. Built-in lines stay unlabeled unless the page that was checked names a topic. On a line you add, type your own labels, separated by commas.</p>
+      {% endif %}
+    </section>
+    <section>
+      <h2>Timeline</h2>
+      {% if timeline %}
+      <ol class="timeline">
+        {% for year, items in timeline %}
+        <li>
+          <span class="year">{{ year }}</span>
+          <ul>
+            {% for q in items %}
+            <li>
+              <a href="{{ url_for('focus', quote_id=q.id) }}">{{ q.author }}</a>
+              <span>{{ q.work }}</span>
+              {% if q.reader_added %}<em>Added by the reader</em>{% endif %}
+            </li>
+            {% endfor %}
+          </ul>
+        </li>
+        {% endfor %}
+      </ol>
+      {% else %}
+      <p class="quiet">No year is stated for the lines on the scroll, so the timeline is empty.</p>
+      {% endif %}
+      {% if undated %}
+      <p class="quiet">{{ undated }} line{{ '' if undated == 1 else 's' }} {{ 'has' if undated == 1 else 'have' }} no date on the source, so {{ 'it stays' if undated == 1 else 'they stay' }} off the timeline.</p>
+      {% endif %}
+    </section>
+  </div>
+  <section class="voices">
+    <h2>Theologians</h2>
+    <ul class="voice-list">
+      {% for q in authors %}
+      <li><a href="{{ url_for('theologian', slug=q.author_slug) }}">{{ q.author }}</a>{% if q.attribution %} <span>{{ q.attribution }}</span>{% endif %}</li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+</section>
+{% endblock %}
