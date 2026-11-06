@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Quaestio · Loci{% endblock %}
+{% block body %}
+<section class="page">
+  <header class="page-head">
+    <h1>Quaestio</h1>
+    <p>Every question is drawn from a line that is actually on the scroll. Wrong answers are other names, works, or citations from that same catalog.</p>
+  </header>
+  {% if question %}
+  <article class="quiz">
+    {% if question.question %}<p class="question">{{ question.question }}</p>{% endif %}
+    <p class="saying{% if question.text|length > 320 %} long{% endif %}">{{ question.text }}</p>
+    <form method="post" action="{{ url_for('quaestio_answer') }}">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <fieldset>
+        <legend>{{ question.prompt }}</legend>
+        {% for choice in question.choices %}
+        <label class="choice">
+          <input type="radio" name="choice" value="{{ choice }}" required>
+          <span>{{ choice }}</span>
+        </label>
+        {% endfor %}
+      </fieldset>
+      <button class="button" type="submit">Answer</button>
+    </form>
+  </article>
+  {% elif result %}
+  <article class="quiz result">
+    <p class="verdict">{{ 'Yes.' if result.correct else 'Not that one.' }}</p>
+    {% if result.quote.question %}<p class="question">{{ result.quote.question }}</p>{% endif %}
+    <p class="saying{% if result.quote.text|length > 320 %} long{% endif %}">{{ result.quote.text }}</p>
+    <p class="citation">
+      {{ result.quote.author }}
+      {% if result.quote.work %} · {{ result.quote.work }}{% endif %}
+      {% if result.quote.citation %} · {{ result.quote.citation }}{% endif %}
+      {% if result.quote.reader_added %} · Added by the reader{% endif %}
+    </p>
+    {% if not result.correct %}
+    <p>The catalog has this as {{ result.answer }}.</p>
+    {% endif %}
+    <p class="row">
+      <a class="button" href="{{ url_for('quaestio') }}">Another question</a>
+      <a class="button quiet-button" href="{{ url_for('focus', quote_id=result.quote.id) }}">Open the line</a>
+    </p>
+  </article>
+  {% else %}
+  <section class="empty">
+    <h2>No question can be drawn</h2>
+    <p>Quaestio uses only quotes that are in the catalog. Add a line of your own, then come back.</p>
+    <p><a class="button" href="{{ url_for('add_form') }}">Add a quote</a></p>
+  </section>
+  {% endif %}
+</section>
+{% endblock %}

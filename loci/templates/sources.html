@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Sources · Loci{% endblock %}
+{% block body %}
+<section class="page">
+  <header class="page-head">
+    <h1>Sources</h1>
+    <p>Each built-in line was checked against the page linked here. Lines you add are yours. They are not checked sources, and they are not listed on this page.</p>
+  </header>
+  {% if quotes %}
+  <ol class="sources">
+    {% for q in quotes %}
+    <li id="{{ q.id }}">
+      <h2>{{ q.author }}</h2>
+      {% if q.attribution %}<p>{{ q.attribution }}</p>{% endif %}
+      {% if q.question %}<p class="question">{{ q.question }}</p>{% endif %}
+      <blockquote>{{ q.text }}</blockquote>
+      {% if q.latin %}<p class="latin">{{ q.latin }}</p>{% else %}<p class="quiet">No Latin on the page that was checked.</p>{% endif %}
+      <p class="citation">
+        {{ q.work }}{% if q.citation %}, {{ q.citation }}{% endif %}{% if q.year %} · {{ q.year }}{% endif %}
+      </p>
+      <p><a href="{{ q.source_url }}" rel="noreferrer">{{ q.source_url }}</a></p>
+      {% if q.source_note %}<p class="quiet">{{ q.source_note }}</p>{% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <section class="empty">
+    <h2>No checked source yet</h2>
+    <p>If a quotation cannot be opened and checked, it stays out of the catalog. You can still add a line of your own. That line will not be listed here.</p>
+    <p><a class="button" href="{{ url_for('add_form') }}">Add a quote</a></p>
+  </section>
+  {% endif %}
+</section>
+{% endblock %}

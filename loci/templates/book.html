@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Commonplace book · Loci{% endblock %}
+{% block body %}
+<section class="page">
+  <header class="page-head">
+    <h1>Commonplace book</h1>
+    <p>Saves and notes live here. Export them as Markdown. A line you added is marked as yours and is not treated as a checked source.</p>
+    <p><a class="button" href="{{ export_href }}">Download Markdown</a></p>
+  </header>
+  {% if entries %}
+  <ol class="book">
+    {% for entry in entries %}
+    <li>
+      {% if entry.missing %}
+      <h2>Missing line</h2>
+      <p>Saved id {{ entry.id }} is no longer in the catalog.</p>
+      {% if entry.note %}<blockquote>{{ entry.note }}</blockquote>{% endif %}
+      {% else %}
+      <h2><a href="{{ url_for('focus', quote_id=entry.id) }}">{{ entry.author }}</a></h2>
+      {% if entry.question %}<p class="question">{{ entry.question }}</p>{% endif %}
+      <blockquote>{{ entry.text }}</blockquote>
+      <p class="citation">
+        {% if entry.work %}{{ entry.work }}{% endif %}{% if entry.citation %}{% if entry.work %}, {% endif %}{{ entry.citation }}{% endif %}
+        {% if entry.reader_added %} · Added by the reader{% endif %}
+        {% if entry.source_url %} · <a href="{{ entry.source_url }}" rel="noreferrer">Source</a>{% endif %}
+      </p>
+      <form method="post" action="{{ url_for('note', quote_id=entry.id) }}" class="note-form">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <label for="book-note-{{ entry.id }}">Note</label>
+        <textarea id="book-note-{{ entry.id }}" name="body" rows="4">{{ entry.note }}</textarea>
+        <button class="act" type="submit">Keep note</button>
+      </form>
+      <div class="actions">
+        <form method="post" action="{{ url_for('save', quote_id=entry.id) }}" class="inline">
+          <input type="hidden" name="csrf" value="{{ csrf }}">
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <button class="act save{% if entry.saved %} on{% endif %}" type="submit" aria-pressed="{{ 'true' if entry.saved else 'false' }}">
+            {{ 'Saved' if entry.saved else 'Save' }}
+          </button>
+        </form>
+        {% if entry.reader_added %}
+        <form method="post" action="{{ url_for('delete_quote', quote_id=entry.id) }}" class="inline delete-form">
+          <input type="hidden" name="csrf" value="{{ csrf }}">
+          <input type="hidden" name="next" value="{{ url_for('book') }}">
+          <button class="act danger" type="submit">Delete</button>
+        </form>
+        {% endif %}
+      </div>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <section class="empty">
+    <h2>Nothing kept yet</h2>
+    <p>Save a line from the feed, or write a note on it. Both show up here, and the Markdown file will include them.</p>
+    <p><a class="button" href="{{ url_for('feed') }}">Go to the feed</a></p>
+  </section>
+  {% endif %}
+</section>
+{% endblock %}

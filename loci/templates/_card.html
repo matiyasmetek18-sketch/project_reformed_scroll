@@ -1,0 +1,80 @@
+{% set sheet = sheet|default(false) %}
+{% set active = active|default(false) %}
+<article
+  class="card{% if sheet %} sheet{% endif %}{% if active %} active shown{% endif %}"
+  data-id="{{ q.id }}"
+  data-path="{{ url_for('focus', quote_id=q.id) }}"
+  data-share="{{ url_for('focus', quote_id=q.id, _external=True) }}"
+  data-text="{{ q.text }}"
+  data-author="{{ q.author }}"
+>
+  <p class="mark" aria-hidden="true">“</p>
+  <div class="card-body">
+    <div class="words">
+      {% if q.question %}<p class="question">{{ q.question }}</p>{% endif %}
+      <p class="saying{% if q.text|length > 320 %} long{% endif %}">{{ q.text }}</p>
+      {% if q.latin %}
+      <details class="latin-fold">
+        <summary>Latin</summary>
+        <p class="latin">{{ q.latin }}</p>
+      </details>
+      {% endif %}
+    </div>
+    <div class="chips">
+      <a class="chip" href="{{ url_for('theologian', slug=q.author_slug) }}">{{ q.author }}</a>
+      {% if q.attribution %}<span class="chip">{{ q.attribution }}</span>{% endif %}
+      {% if q.reader_added %}<span class="chip reader">Added by the reader</span>{% endif %}
+      {% if q.year %}<span class="chip">{{ q.year }}</span>{% endif %}
+      {% for topic in q.topics %}<span class="chip">{{ topic }}</span>{% endfor %}
+    </div>
+    <p class="citation">
+      {%- if q.work %}{{ q.work }}{% endif -%}
+      {%- if q.citation %}{% if q.work %}, {% endif %}{{ q.citation }}{% endif -%}
+      {%- if q.reader_added %} · Added by the reader{% endif -%}
+      {%- if q.source_url %} · <a href="{{ q.source_url }}" rel="noreferrer">Source</a>{% endif -%}
+    </p>
+    <div class="actions">
+      <form method="post" action="{{ url_for('amen', quote_id=q.id) }}" class="inline">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <input type="hidden" name="mode" value="toggle">
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <button class="act amen{% if q.amened %} on{% endif %}" type="submit" aria-pressed="{{ 'true' if q.amened else 'false' }}">
+          <span class="heart" aria-hidden="true">♥</span> Amen
+        </button>
+      </form>
+      <form method="post" action="{{ url_for('save', quote_id=q.id) }}" class="inline">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <button class="act save{% if q.saved %} on{% endif %}" type="submit" aria-pressed="{{ 'true' if q.saved else 'false' }}">
+          {{ 'Saved' if q.saved else 'Save' }}
+        </button>
+      </form>
+      <form method="post" action="{{ url_for('follow') }}" class="inline">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <input type="hidden" name="author" value="{{ q.author }}">
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <button class="act follow{% if q.following %} on{% endif %}" type="submit" aria-pressed="{{ 'true' if q.following else 'false' }}" data-author="{{ q.author }}">
+          {{ 'Following' if q.following else 'Follow' }}
+        </button>
+      </form>
+      <a class="act share" href="{{ url_for('focus', quote_id=q.id) }}">Share</a>
+      {% if q.reader_added %}
+      <form method="post" action="{{ url_for('delete_quote', quote_id=q.id) }}" class="inline delete-form">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <input type="hidden" name="next" value="{{ url_for('feed') }}">
+        <button class="act danger" type="submit">Delete</button>
+      </form>
+      {% endif %}
+    </div>
+    <details class="note-fold"{% if q.note %} open{% endif %}>
+      <summary>Note{% if q.note %} kept{% endif %}</summary>
+      <form method="post" action="{{ url_for('note', quote_id=q.id) }}" class="note-form">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <label class="quiet" for="note-{{ q.id }}">For the commonplace book</label>
+        <textarea id="note-{{ q.id }}" name="body" rows="3" placeholder="A line of your own">{{ q.note }}</textarea>
+        <button type="submit" class="act">Keep note</button>
+      </form>
+    </details>
+  </div>
+</article>

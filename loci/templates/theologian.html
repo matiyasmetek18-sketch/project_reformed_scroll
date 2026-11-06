@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}{{ author }} · Loci{% endblock %}
+{% block body %}
+<section class="page">
+  <header class="page-head">
+    <h1>{{ author }}</h1>
+    {% if quotes and quotes[0].attribution %}<p>{{ quotes[0].attribution }}</p>{% endif %}
+    {% if quotes and quotes[0].reader_added %}<p>Added by the reader. Not a checked source.</p>{% endif %}
+    <p>{{ quotes|length }} line{{ '' if quotes|length == 1 else 's' }} on the scroll.</p>
+  </header>
+  <div class="stack">
+    {% for q in quotes %}
+      {% with active=true, sheet=true %}
+      {% include "_card.html" %}
+      {% endwith %}
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

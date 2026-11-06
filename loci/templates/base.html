@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf" content="{{ csrf }}">
+  <title>{% block title %}Loci{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='loci.css') }}">
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <a class="skip" href="#main">Skip to the scroll</a>
+  <header class="bar">
+    <a class="brand" href="{{ url_for('feed') }}">Loci</a>
+    <nav>
+      <a href="{{ url_for('feed') }}" {% if nav in ('feed', 'focus') %}aria-current="page"{% endif %}>Feed</a>
+      <a href="{{ url_for('explore') }}" {% if nav == 'explore' %}aria-current="page"{% endif %}>Explore</a>
+      <a href="{{ url_for('quaestio') }}" {% if nav in ('quaestio', 'quaestio_answer') %}aria-current="page"{% endif %}>Quaestio</a>
+      <a href="{{ url_for('book') }}" {% if nav == 'book' %}aria-current="page"{% endif %}>Book</a>
+      <a href="{{ url_for('add_form') }}" {% if nav in ('add_form', 'add_quote') %}aria-current="page"{% endif %}>Add</a>
+      <a href="{{ url_for('sources') }}" {% if nav == 'sources' %}aria-current="page"{% endif %}>Sources</a>
+    </nav>
+  </header>
+  <main id="main">
+    {% block body %}{% endblock %}
+  </main>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="{{ url_for('static', filename='loci.js') }}"></script>
+</body>
+</html>
